@@ -3,26 +3,32 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "[[ModifierName]]"
-version = "[[Version number]]"
-description = "[[Short description]]"
+name = "scoreBasedDenoising"
+version = "2023.1"
+description = "x"
 keywords = ["ovito", "python-modifier"]
-authors = [{name = "[[Author 1 name]]", email = "[[Author 1 email]]"}, {name = "[[Author 2 name]]", email = "[[Author 2 email]]"}]
-maintainers = [{name = "[[Maintainer 1 name]]", email = "[[Maintainer 1 email]]"}, {name = "[[Maintainer 2 name]]", email = "[[Maintainer 2 email]]"}]
-license = {text = "[[License]]"}
+authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
+maintainers = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
+license = { text = "MIT" }
 readme = "README.md"
-requires-python = "[[>=3.7]]"
+requires-python = ">=3.7"
 dependencies = [
-    "ovito >= [[VersionNumber]]", # OVITO must be >=3.9!
-    # "[[dependency1]]",
-    # "[[dependency2 == Version]]",
+    "ovito >= 3.9.1",
+    "torch >= 1.11.0",
+    "torch-geometric >= 2.0.4",
+    "ase",
+    "pandas",
+    "e3nn >= 0.4.4",
 ]
 
 [project.urls]
-repository = "[[Repository Link]]"
+repository = "https://github.com/nnn911/ScoreBasedDenoising"
 
 [project.entry-points.'OVITO.Modifier']
-"[[Human readable modifier name]]" = "[[ModifierName]]:[[ModifierName]]"
+"Score-based denoising" = "scoreBasedDenoising:ScoreBasedDenoising"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+scoreBasedDenoising = ["pretrained_models/*.pt", "pretrained_models/LICENSE"]
