@@ -1,17 +1,41 @@
-# Python Modifier Template
+# Score-based Denoising
 
-Template for a custom Python-based modifier that hooks into OVITO and can easily be shared with other users.
+This is a wrapper for *OVITO* around the "Score-based denoising for atomic structure identification" presented in the [graphite repo](https://github.com/LLNL/graphite/) by Lawrence Livermore National Lab. Further information and the official citation is [here](https://doi.org/10.48550/arXiv.2212.02421).
 
-This repository contains a template for creating your own [Python script modifier](https://docs.ovito.org/python/introduction/custom_modifiers.html), 
-which can be installed into *OVITO Pro* or the [`ovito`](https://pypi.org/project/ovito/) Python module using *pip*.
+## Description
+[[Full description]]
 
-## Getting Started
+## Parameters 
+- `steps` / "Number of denoising steps": Number of denoising interations taken. More iterations require more time. You can check the mean displacement per iteration graph to assess convergence.
+- `scale` / "Nearest neighbor distance": Estimation of the nearest neighbor distance used to scale the coordinates before they are input into the model. If this is `None` OVITO will try to estimate the correct nearest neighbor distance. 
+- `structure` / "Crystal structure / material system": Allows you to select one of: "FCC", "BCC", "HCP", or "SiO2", depending on your input structure. Note, that an SiO2 structure requires a type named "Si". 
+- `device` / "Device": Allows you to select your computing device from: "cpu", "cuda", "mps". Only available devices will be shown. Please read the "Installation" section for additional information.
 
-1. Click the "Use this template" button to create your own repository based on this template.
-2. Rename `src/ModifierName` to reflect the name of your modifier.
-3. Implement your [modifier](https://docs.ovito.org/python/introduction/custom_modifiers.html#advanced-interface) in [`src/ModifierName/__init__.py`](src/ModifierName/__init__.py). If your modifier needs access to more than one frame of a trajectory, you can uncomment and implement the `input_caching_hints` method. Otherwise, you can delete it. More details on this method can be found in the [OVITO Python docs](https://www.ovito.org/docs/current/python/introduction/custom_modifiers.html#writing-custom-modifiers-advanced-interface). 
-4. Fill in the [`pyproject.toml`](pyproject.toml) file. Fields that need to be replaced with your information are enclosed in descriptive `[[field]]` tags. Please make sure to include ovito>=3.9 as a dependency. Depending on your needs, you can add additional fields to the `pyproject.toml` file. Information can be found [here](https://setuptools.pypa.io/en/latest/userguide/index.html).
-5. Fill in the [`README_Template.md`](README_Template.md) file. Again, the `[[fields]]` placeholders should guide you. Feel free to add other sections like "Images", "Citation", or "References" as needed.
-6. Add meaningful examples and data sample files to the `Examples` directory to help others understand the use of your modifier.
-7. Pick a license for your project and replace the current (MIT) [`LICENSE`](LICENSE) file with your license. If you keep the MIT license, please update the name and year in the current file.
-8. Once you're done, rename `README_Template.md` to `README.md`, replacing this file.
+## Example
+[[Usage example]]
+
+## Installation
+- *OVITO PRO* built-in Python interpreter
+```
+ovitos -m pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
+``` 
+- Standalone Python package or Conda environment
+```
+pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
+```
+- Please note that the `--user` tag is recommended but optional and depends on your Python installation.
+
+By default this will install the CPU version of [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io). 
+
+On Mac, the `mps` backend will also be presented. This is mostly for future proofing since currently not all required PyTorch and PyG methods have been ported to `mps`.
+
+On other platforms you can install the CUDA accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `CUDA` in the modifier device selection to run model inference on GPU.
+
+## Technical information / dependencies
+Tested on:
+    - OVITO == 3.9.1
+    - torch == 1.11.0 | 2.0.1
+    - torch-geometric == 2.0.4 | 2.3.1
+
+## Contact
+Daniel Utt utt@ovito.org

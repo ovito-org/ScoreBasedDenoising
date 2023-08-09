@@ -28,9 +28,11 @@ class ScoreBasedDenoising(ModifierInterface):
     numNearestNeigh = {"FCC": 12, "BCC": 8, "HCP": 12, "SiO2": 4}
 
     steps = Int(8, label="Number of denoising steps")
-    scale = Union(None, Float(3.2), label="Nearest neighbor distance")
+    scale = Union(None, Float, label="Nearest neighbor distance")
 
-    structure = Enum("None", "FCC", "BCC", "HCP", "SiO2", label="Model")
+    structure = Enum(
+        "None", "FCC", "BCC", "HCP", "SiO2", label="Crystal structure / material system"
+    )
 
     if torch.cuda.is_available():
         device = Enum("cpu", "cuda", label="Device")
@@ -105,7 +107,7 @@ class ScoreBasedDenoising(ModifierInterface):
         _, neighVec = finder.find_all(idx)
         return np.mean(np.linalg.norm(neighVec, axis=2))
 
-    def setupSiO2model(self):
+    def setupSiO2model(self, data):
         numSpecies = 2
         model_path = Path(
             Path(scoreBasedDenoising.__file__).parent, "pretrained_models"
@@ -114,6 +116,20 @@ class ScoreBasedDenoising(ModifierInterface):
         model.load_state_dict(
             torch.load(Path(model_path, "SiO2-denoiser.state_dict.pt"))
         )
+
+        cts = {"Si": 0, "O": 0}
+        for uni in np.unique(data.particles["Particle Type"]):
+            name = data.particles["Particle Type"].type_by_id(uni).name
+            if name not in cts:
+                raise ValueError(
+                    f"Unknown particle type '{name}' found. Please ensure that you have only named types called 'Si' or 'O' in your system."
+                )
+            cts[name] += 1
+        for k, v in cts.items():
+            if v == 0:
+                raise ValueError(
+                    f"Type '{k}' not found in your system. Please ensure that you have both named types called 'Si' and 'O' in your system."
+                )
         return model
 
     def setupFccBccHcpModel(self, data):
@@ -138,7 +154,7 @@ class ScoreBasedDenoising(ModifierInterface):
     def modify(self, data, frame, **kwargs):
         match self.structure:
             case "SiO2":
-                model = self.setupSiO2model()
+                model = self.setupSiO2model(data)
             case "FCC" | "BCC" | "HCP":
                 model = self.setupFccBccHcpModel(data)
             case "None":
