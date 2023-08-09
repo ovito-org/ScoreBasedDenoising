@@ -1,5 +1,7 @@
 ### Score-based denoising for atomic structure identification
+#
 # Wrapper around the original implementation by: https://github.com/LLNL/graphite
+#
 # Reference: https://arxiv.org/abs/2212.02421
 
 import time
@@ -28,7 +30,7 @@ class ScoreBasedDenoising(ModifierInterface):
     steps = Int(8, label="Number of denoising steps")
     scale = Union(None, Float(3.2), label="Nearest neighbor distance")
 
-    structure = Enum("FCC", "BCC", "HCP", "SiO2", label="Model")
+    structure = Enum("None", "FCC", "BCC", "HCP", "SiO2", label="Model")
 
     if torch.cuda.is_available():
         device = Enum("cpu", "cuda", label="Device")
@@ -139,6 +141,8 @@ class ScoreBasedDenoising(ModifierInterface):
                 model = self.setupSiO2model()
             case "FCC" | "BCC" | "HCP":
                 model = self.setupFccBccHcpModel(data)
+            case "None":
+                return
             case _:
                 raise NotImplementedError
 
@@ -150,9 +154,9 @@ class ScoreBasedDenoising(ModifierInterface):
         if self.scale is not None:
             modelScale = ScoreBasedDenoising.originalScale[self.structure] / self.scale
         else:
-            modelScale = ScoreBasedDenoising.originalScale[
-                self.structure
-            ] / self.estimateNearestNeighborsDistance(data)
+            estNNdist = self.estimateNearestNeighborsDistance(data)
+            print(f"Estimated nearest neighbor distance = {estNNdist:#.3g} A")
+            modelScale = ScoreBasedDenoising.originalScale[self.structure] / estNNdist
 
         denoised_atoms = yield from self.denoise_snapshot(
             noisy_atoms, model, modelScale
