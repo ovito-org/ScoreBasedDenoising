@@ -19,6 +19,8 @@ dependencies = [
     "ase",
     "pandas",
     "e3nn >= 0.4.4",
+    # "graphite @ git+https://github.com/LLNL/graphite.git@???", # Swap dependency one PR is accepted
+    "graphite @ git+https://github.com/nnn911/graphite.git@875d73e",
 ]
 
 [project.urls]
