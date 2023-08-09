@@ -11,6 +11,7 @@ from graphite.nn.models.e3nn_nequip import NequIP
 from graphite.transforms import PeriodicRadiusGraph
 from ovito.io.ase import ovito_to_ase
 from ovito.pipeline import ModifierInterface
+from ovito.data import NearestNeighborFinder
 from sklearn.preprocessing import LabelEncoder
 from torch_geometric.data import Data
 from traits.api import Enum, Float, Int, Union
@@ -21,7 +22,8 @@ from scoreBasedDenoising.InitialEmbedding import InitialEmbedding
 
 class ScoreBasedDenoising(ModifierInterface):
     cutoff = 3.2
-    originalScale = {"FCC": 2.425, "BCC": 2.41, "HCP": 2.41, "SiO2": 1.61}
+    originalScale = {"FCC": 2.42, "BCC": 2.46, "HCP": 2.41, "SiO2": 1.59}
+    numNearestNeigh = {"FCC": 12, "BCC": 8, "HCP": 12, "SiO2": 4}
 
     steps = Int(8, label="Number of denoising steps")
     scale = Union(None, Float(3.2), label="Nearest neighbor distance")
@@ -84,6 +86,23 @@ class ScoreBasedDenoising(ModifierInterface):
             yield
         return data.pos.clone().numpy() / scale
 
+    def estimateNearestNeighborsDistance(self, data):
+        finder = NearestNeighborFinder(
+            ScoreBasedDenoising.numNearestNeigh[self.structure], data
+        )
+        match self.structure:
+            case "SiO2":
+                idx = np.where(
+                    data.particles["Particle Type"]
+                    == data.particles["Particle Type"].type_by_name("Si").id
+                )[0]
+            case "FCC" | "BCC" | "HCP":
+                idx = None
+            case _:
+                raise NotImplementedError
+        _, neighVec = finder.find_all(idx)
+        return np.mean(np.linalg.norm(neighVec, axis=2))
+
     def setupSiO2model(self):
         numSpecies = 2
         model_path = Path(
@@ -115,12 +134,13 @@ class ScoreBasedDenoising(ModifierInterface):
         del data.particles_["Particle Type Backup"]
 
     def modify(self, data, frame, **kwargs):
-        if self.structure == "SiO2":
-            model = self.setupSiO2model()
-        elif self.structure in ("FCC", "BCC", "HCP"):
-            model = self.setupFccBccHcpModel(data)
-        else:
-            raise NotImplementedError
+        match self.structure:
+            case "SiO2":
+                model = self.setupSiO2model()
+            case "FCC" | "BCC" | "HCP":
+                model = self.setupFccBccHcpModel(data)
+            case _:
+                raise NotImplementedError
 
         model = model.to(self.device)
         model.eval()
@@ -130,12 +150,19 @@ class ScoreBasedDenoising(ModifierInterface):
         if self.scale is not None:
             modelScale = ScoreBasedDenoising.originalScale[self.structure] / self.scale
         else:
-            modelScale = 1.0
+            modelScale = ScoreBasedDenoising.originalScale[
+                self.structure
+            ] / self.estimateNearestNeighborsDistance(data)
 
         denoised_atoms = yield from self.denoise_snapshot(
             noisy_atoms, model, modelScale
         )
         data.particles_["Position_"][...] = denoised_atoms
 
-        if self.structure in ("FCC", "BCC", "HCP"):
-            self.teardownFccBccHcpModel(data)
+        match self.structure:
+            case "SiO2":
+                pass
+            case "FCC" | "BCC" | "HCP":
+                self.teardownFccBccHcpModel(data)
+            case _:
+                raise NotImplementedError

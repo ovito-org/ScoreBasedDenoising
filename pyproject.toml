@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scoreBasedDenoising"
-version = "2023.1"
+version = "2023.2"
 description = "x"
 keywords = ["ovito", "python-modifier"]
 authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 maintainers = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dependencies = [
     "ovito >= 3.9.1",
     "torch >= 1.11.0",
