@@ -1,25 +1,28 @@
-### Score-based denoising for atomic structure identification
-#
-# Wrapper around the original implementation by: https://github.com/LLNL/graphite
-#
+# Score-based denoising for atomic structure identification
+# Documentation: https://github.com/nnn911/ScoreBasedDenoising
+# Wrapper around the original implementation by Tim Hsu (LLNL): https://github.com/LLNL/graphite
 # Reference: https://arxiv.org/abs/2212.02421
 
 import time
+import warnings
 from pathlib import Path
 
 import numpy as np
 import torch
 from graphite.nn.models.e3nn_nequip import NequIP
 from graphite.transforms import PeriodicRadiusGraph
+from ovito.data import NearestNeighborFinder
 from ovito.io.ase import ovito_to_ase
 from ovito.pipeline import ModifierInterface
-from ovito.data import NearestNeighborFinder
 from sklearn.preprocessing import LabelEncoder
 from torch_geometric.data import Data
 from traits.api import Enum, Float, Int, Union
 
 import scoreBasedDenoising
 from scoreBasedDenoising.InitialEmbedding import InitialEmbedding
+
+warnings.filterwarnings("ignore", category=UserWarning,
+                        message="The TorchScript type system doesn't support")
 
 
 class ScoreBasedDenoising(ModifierInterface):
@@ -138,7 +141,8 @@ class ScoreBasedDenoising(ModifierInterface):
             Path(scoreBasedDenoising.__file__).parent, "pretrained_models"
         )
         model = ScoreBasedDenoising.getModel(numSpecies)
-        model.load_state_dict(torch.load(Path(model_path, "Cu-denoiser.state_dict.pt")))
+        model.load_state_dict(torch.load(
+            Path(model_path, "Cu-denoiser.state_dict.pt")))
 
         data.particles_.create_property(
             "Particle Type Backup", data=data.particles["Particle Type"]
@@ -148,7 +152,8 @@ class ScoreBasedDenoising(ModifierInterface):
         return model
 
     def teardownFccBccHcpModel(self, data):
-        data.particles_["Particle Type_"][...] = data.particles["Particle Type Backup"]
+        data.particles_[
+            "Particle Type_"][...] = data.particles["Particle Type Backup"]
         del data.particles_["Particle Type Backup"]
 
     def modify(self, data, frame, **kwargs):
