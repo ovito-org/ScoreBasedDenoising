@@ -1,6 +1,6 @@
 # Score-based denoising for atomic structure identification
 # Documentation: https://github.com/nnn911/ScoreBasedDenoising
-# Wrapper around the original implementation by Tim Hsu (LLNL): https://github.com/LLNL/graphite
+# Wrapper around the original implementation at LLNL: https://github.com/LLNL/graphite
 # Reference: https://arxiv.org/abs/2212.02421
 
 import time
@@ -11,7 +11,7 @@ import numpy as np
 import torch
 from graphite.nn.models.e3nn_nequip import NequIP
 from graphite.transforms import PeriodicRadiusGraph
-from ovito.data import NearestNeighborFinder
+from ovito.data import NearestNeighborFinder, DataTable
 from ovito.io.ase import ovito_to_ase
 from ovito.pipeline import ModifierInterface
 from sklearn.preprocessing import LabelEncoder
@@ -82,16 +82,18 @@ class ScoreBasedDenoising(ModifierInterface):
 
         # Denoising trajectory
         radius_graph = ScoreBasedDenoising.getRadiusGraph()
+        convergence = []
         for i in range(self.steps):
             start = time.perf_counter()
             data = radius_graph(data)
             disp = model(data.to(self.device))
+            convergence.append(torch.mean(torch.square(disp)).to("cpu"))
             data.pos -= disp
             print(
                 f"Iteration: {i+1}/{self.steps}: {time.perf_counter() - start :#.3g} s"
             )
             yield
-        return data.pos.clone().numpy() / scale
+        return data.pos.clone().numpy() / scale, convergence
 
     def estimateNearestNeighborsDistance(self, data):
         finder = NearestNeighborFinder(
@@ -156,6 +158,15 @@ class ScoreBasedDenoising(ModifierInterface):
             "Particle Type_"][...] = data.particles["Particle Type Backup"]
         del data.particles_["Particle Type Backup"]
 
+    @staticmethod
+    def writeTable(data, y, ylabel, title):
+        table = data.tables.create(
+            identifier=title.replace(" ", "_"), plot_mode=DataTable.PlotMode.Line, title=title)
+        table.x = table.create_property(
+            'Step', data=np.arange(len(y)))
+        table.y = table.create_property(
+            ylabel, data=y)
+
     def modify(self, data, frame, **kwargs):
         match self.structure:
             case "SiO2":
@@ -179,7 +190,7 @@ class ScoreBasedDenoising(ModifierInterface):
             print(f"Estimated nearest neighbor distance = {estNNdist:#.3g} A")
             modelScale = ScoreBasedDenoising.originalScale[self.structure] / estNNdist
 
-        denoised_atoms = yield from self.denoise_snapshot(
+        denoised_atoms, convergence = yield from self.denoise_snapshot(
             noisy_atoms, model, modelScale
         )
         data.particles_["Position_"][...] = denoised_atoms
@@ -191,3 +202,8 @@ class ScoreBasedDenoising(ModifierInterface):
                 self.teardownFccBccHcpModel(data)
             case _:
                 raise NotImplementedError
+
+        ScoreBasedDenoising.writeTable(
+            data, convergence, "Convergence", "Convergence")
+        ScoreBasedDenoising.writeTable(data, np.log10(
+            convergence), "Log10(Convergence)", "Log Convergence")
