@@ -25,21 +25,34 @@ Score-based denoising __on__:
 ![Score-based denoising on](Examples/fcc_gb_example_final.png)
 
 ## Installation
-- *OVITO PRO* built-in Python interpreter
-```
-ovitos -m pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
-``` 
-- Standalone Python package or Conda environment
-```
-pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
-```
-- Please note that the `--user` tag is recommended but optional and depends on your Python installation.
+- OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
+  ```
+  ovitos -m pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
+  ``` 
+  The `--user` option is recommended and [installs the package in the user's site directory](https://pip.pypa.io/en/stable/user_guide/#user-installs).
+
+- Other Python interpreters or Conda environments:
+  ```
+  pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
+  ```
 
 By default this will install the CPU version of [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io). 
 
 On Mac, the `mps` backend will also be presented. This is mostly for future proofing since currently not all required PyTorch and PyG methods have been ported to `mps`.
 
 On other platforms you can install the CUDA accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `CUDA` in the modifier device selection to run model inference on GPU.
+
+### Conda (Micromamba) + Cuda on windows 11 install example
+
+```
+micromamba create -n denoise -c conda-forge python=3.10
+micromamba activate denoise
+micromamba install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.9.1
+micromamba install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia -c conda-forge
+micromamba install pyg -c pyg -c conda-forge
+micromamba install -c conda-forge ase pandas e3nn
+pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
+```
 
 ## Technical information / dependencies
 Tested on:
