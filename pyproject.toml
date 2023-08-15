@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "scoreBasedDenoising"
 version = "2023.3"
 description = "Score-based denoising for atomic structure identification - Iteratively subtract thermal noises or perturbations from atomic positions."
-keywords = ["ovito", "python-modifier"]
-authors = [{ name = "Daniel Utt", email = "ovito-extension" }]
+keywords = ["ovito", "ovito-extension"]
+authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 maintainers = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 license = { text = "MIT" }
 readme = "README.md"
