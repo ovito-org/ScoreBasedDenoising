@@ -101,7 +101,7 @@ class ScoreBasedDenoising(ModifierInterface):
                 f"Iteration: {i+1}/{self.steps}: {time.perf_counter() - start :#.3g} s"
             )
             yield
-        return data.pos.clone().numpy() / scale, convergence
+        return data.pos.to("cpu").numpy() / scale, convergence
 
     def estimateNearestNeighborsDistance(self, data):
         finder = NearestNeighborFinder(
