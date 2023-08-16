@@ -91,3 +91,21 @@ def test_selection_fcc_settings(import_pipeline: Pipeline):
 
     for k, v in expected.items():
         assert data.attributes[k] == v
+
+
+def test_fcc_distance_settings(import_pipeline: Pipeline):
+    pipe = import_pipeline
+    pipe.modifiers.append(ScoreBasedDenoising(scale=2.5, structure="FCC"))
+    pipe.modifiers.append(CommonNeighborAnalysisModifier())
+    data = pipe.compute()
+    expected = {
+        "CommonNeighborAnalysis.counts.BCC": 11,
+        "CommonNeighborAnalysis.counts.FCC": 7898,
+        "CommonNeighborAnalysis.counts.HCP": 214,
+        "CommonNeighborAnalysis.counts.ICO": 0,
+        "CommonNeighborAnalysis.counts.OTHER": 325,
+    }
+
+    assert len(data.tables["Convergence"].xy()) == 8
+    for k, v in expected.items():
+        assert data.attributes[k] == v
