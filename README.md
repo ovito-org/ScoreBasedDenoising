@@ -3,6 +3,7 @@
 This is a wrapper for *OVITO* around the "Score-based denoising for atomic structure identification" presented in this [graphite repo](https://github.com/LLNL/graphite/). Further information and the official citation on [arXiv](https://doi.org/10.48550/arXiv.2212.02421).
 
 ## Description
+
 Score-based denoising iteratively subtracts thermal vibrations or other pertubations from atomistic trajectories.
 
 As described by the original authors in their abstract:
@@ -12,10 +13,12 @@ As described by the original authors in their abstract:
 Hsu, T., Sadigh, B., Bertin, N., Park, C. W., Chapman, J., Bulatov, V., & Zhou, F. (2022). Score-based denoising for atomic structure identification (Version 3). arXiv. https://doi.org/10.48550/ARXIV.2212.02421
 
 ## Parameters 
+
 - "Number of denoising steps" | `steps`: Number of denoising interations taken. More iterations require more time. You can check the mean displacement per iteration graph to assess convergence.
 - "Nearest neighbor distance" | `scale` : Estimation of the nearest neighbor distance used to scale the coordinates before they are input into the model. If this is `None` OVITO will try to estimate the correct nearest neighbor distance. 
 - "Crystal structure / material system" | `structure` : Allows you to select one of: "FCC", "BCC", "HCP", or "SiO2", depending on your input structure. Note, that an SiO2 structure requires a type named "Si". 
 - "Device" | `device`: Allows you to select your computing device from: "cpu", "cuda", "mps". Only available devices will be shown. Please read the "Installation" section for additional information.
+- "Only selected" | `only_selected`: Apply the modifier only to the selected particles. Following the convention set by other modifiers, even atoms that are not selected will be used as neighbors.
 
 ## Example
 

@@ -9,7 +9,6 @@ import importlib.resources as impRes
 import sys
 import time
 import warnings
-from pathlib import Path
 
 import numpy as np
 import torch
@@ -18,10 +17,16 @@ from graphite.nn.utils.e3nn_initial_embedding import InitialEmbedding
 from graphite.transforms import PeriodicRadiusGraph
 from ovito.data import DataTable, NearestNeighborFinder
 from ovito.io.ase import ovito_to_ase
+from ovito.modifiers import (
+    DeleteSelectedModifier,
+    ExpandSelectionModifier,
+    FreezePropertyModifier,
+    InvertSelectionModifier,
+)
 from ovito.pipeline import ModifierInterface
 from sklearn.preprocessing import LabelEncoder
 from torch_geometric.data import Data
-from traits.api import Enum, Float, Int, Union
+from traits.api import Bool, Enum, Float, Int, Union
 
 # Make InitialEmbedding visible to torch.load() (pre-trained models expect Initial embedding to be part of main)
 setattr(sys.modules["__main__"], "InitialEmbedding", InitialEmbedding)
@@ -51,6 +56,8 @@ class ScoreBasedDenoising(ModifierInterface):
         device = Enum("cpu", "mps", label="Device")
     else:
         device = "cpu"
+
+    only_selected = Bool(False, label="Only selected")
 
     @staticmethod
     def getRadiusGraph():
@@ -121,7 +128,7 @@ class ScoreBasedDenoising(ModifierInterface):
         return np.mean(np.linalg.norm(neighVec, axis=2))
 
     def setupSiO2model(self, data):
-        modelDir = impRes.files('graphite.pretrained_models.denoiser')
+        modelDir = impRes.files("graphite.pretrained_models.denoiser")
         model = torch.load(modelDir.joinpath("SiO2-denoiser.pt"))
         cts = {"Si": 0, "O": 0}
         for uni in np.unique(data.particles["Particle Type"]):
@@ -139,7 +146,7 @@ class ScoreBasedDenoising(ModifierInterface):
         return model
 
     def setupFccBccHcpModel(self, data):
-        modelDir = impRes.files('graphite.pretrained_models.denoiser')
+        modelDir = impRes.files("graphite.pretrained_models.denoiser")
         model = torch.load(modelDir.joinpath("Cu-denoiser.pt"))
         data.particles_.create_property(
             "Particle Type Backup", data=data.particles["Particle Type"]
@@ -161,14 +168,12 @@ class ScoreBasedDenoising(ModifierInterface):
         table.x = table.create_property("Step", data=np.arange(len(y)))
         table.y = table.create_property(ylabel, data=y)
 
-    def modify(self, data, frame, **kwargs):
+    def run(self, data, frame, **kwargs):
         match self.structure:
             case "SiO2":
                 model = self.setupSiO2model(data)
             case "FCC" | "BCC" | "HCP":
                 model = self.setupFccBccHcpModel(data)
-            case "None":
-                return
             case _:
                 raise NotImplementedError
 
@@ -201,3 +206,34 @@ class ScoreBasedDenoising(ModifierInterface):
         ScoreBasedDenoising.writeTable(
             data, np.log10(convergence), "Log10(Convergence)", "Log Convergence"
         )
+
+    def modify(self, data, frame, **kwargs):
+        if self.structure == "None":
+            return
+
+        if self.only_selected:
+            if np.sum(data.particles["Selection"]) == 0:
+                return
+
+            cutoff = 2 * self.estimateNearestNeighborsDistance(data)
+            data_clone = data.clone()
+            data_clone.apply(
+                FreezePropertyModifier(
+                    source_property="Selection", destination_property="SelectionOrig"
+                )
+            )
+            data_clone.apply(ExpandSelectionModifier(cutoff=cutoff))
+            data_clone.apply(InvertSelectionModifier())
+            data_clone.apply(DeleteSelectedModifier())
+
+            yield from self.run(data_clone, frame, **kwargs)
+
+            data.particles_["Position_"][
+                data.particles["Selection"] == 1
+            ] = data_clone.particles["Position"][
+                data_clone.particles["SelectionOrig"] == 1
+            ]
+            for t in data_clone.tables:
+                data.objects.append(data_clone.tables[t])
+        else:
+            yield from self.run(data, frame, **kwargs)
