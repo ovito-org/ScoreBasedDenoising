@@ -21,7 +21,7 @@ dependencies = [
     "e3nn >= 0.4.4",
     # "graphite @ git+https://github.com/LLNL/graphite.git@",
     # Temporarily use my fork until PRs are merged upstream
-    "graphite @git+https://github.com/nnn911/graphite@6a6dcc",
+    "graphite @git+https://github.com/nnn911/graphite@d068a0c",
 ]
 
 [project.urls]
