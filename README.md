@@ -23,9 +23,9 @@ Hsu, T., Sadigh, B., Bertin, N., Park, C. W., Chapman, J., Bulatov, V., & Zhou, 
 ## Example
 
 Score-based denoising __off__:
-![Score-based denoising off](Examples/fcc_gb_example_initial.png)
+![Score-based denoising off](examples/fcc_gb_example_initial.png)
 Score-based denoising __on__:
-![Score-based denoising on](Examples/fcc_gb_example_final.png)
+![Score-based denoising on](examples/fcc_gb_example_final.png)
 
 ## Installation
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
