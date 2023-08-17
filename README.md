@@ -24,10 +24,7 @@ The modifier can be found under the label "Denoise particle positions" in the OV
 
 ## Example
 
-Score-based denoising __off__:
-![Score-based denoising off](examples/fcc_gb_example_initial.png)
-Score-based denoising __on__:
-![Score-based denoising on](examples/fcc_gb_example_final.png)
+![Score-based denoising](examples/fcc_gb_example_comparison.png)
 
 ## Installation
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
