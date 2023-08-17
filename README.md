@@ -14,6 +14,8 @@ Hsu, T., Sadigh, B., Bertin, N., Park, C. W., Chapman, J., Bulatov, V., & Zhou, 
 
 ## Parameters 
 
+The modifier can be found under the label "Denoise particle positions" in the OVITO Pro interface. The Python modifier class and the module are both called `ScoreBasedDenoising`.
+
 - "Number of denoising steps" | `steps`: Number of denoising interations taken. More iterations require more time. You can check the mean displacement per iteration graph to assess convergence.
 - "Nearest neighbor distance" | `scale` : Estimation of the nearest neighbor distance used to scale the coordinates before they are input into the model. If this is `None` OVITO will try to estimate the correct nearest neighbor distance. 
 - "Crystal structure / material system" | `structure` : Allows you to select one of: "FCC", "BCC", "HCP", or "SiO2", depending on your input structure. Note, that an SiO2 structure requires a type named "Si". 
@@ -43,9 +45,9 @@ By default this will install the CPU version of [PyTorch](https://pytorch.org/ge
 
 On Mac, the `mps` backend will also be presented. This is mostly for future proofing since currently not all required PyTorch and PyG methods have been ported to `mps`.
 
-On other platforms you can install the CUDA accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `CUDA` in the modifier device selection to run model inference on GPU.
+On other platforms you can install the cuda accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `cuda` in the modifier device selection to run model inference on GPU.
 
-### Conda (Micromamba) + Cuda on windows 11 install example
+### Conda (Micromamba) + cuda on Windows 11 install example
 
 ```
 micromamba create -n denoise -c conda-forge python=3.10
