@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scoreBasedDenoising"
-version = "2023.5"
+version = "2023.6"
 description = "Score-based denoising for atomic structure identification - Iteratively subtract thermal noises or perturbations from atomic positions."
 keywords = ["ovito", "ovito-extension"]
 authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
@@ -19,16 +19,16 @@ dependencies = [
     "ase",
     "pandas",
     "e3nn >= 0.4.4",
-    # "graphite @ git+https://github.com/LLNL/graphite.git@",
+    "graphite @ git+https://github.com/LLNL/graphite.git@b7b182d",
     # Temporarily use my fork until PRs are merged upstream
-    "graphite @git+https://github.com/nnn911/graphite@d068a0c",
+    # "graphite @git+https://github.com/nnn911/graphite@d068a0c",
 ]
 
 [project.urls]
 repository = "https://github.com/nnn911/ScoreBasedDenoising"
 
 [project.entry-points.'OVITO.Modifier']
-"Score-based denoising" = "scoreBasedDenoising:ScoreBasedDenoising"
+"Denoise atomic positions" = "scoreBasedDenoising:ScoreBasedDenoising"
 
 [tool.setuptools.packages.find]
 where = ["src"]
