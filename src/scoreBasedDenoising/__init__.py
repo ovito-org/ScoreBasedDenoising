@@ -58,7 +58,7 @@ class ScoreBasedDenoising(ModifierInterface):
         label="Crystal structure / material system",
     )
 
-    modelPath = Union(None, Str, label="Model file path")
+    model_path = Union(None, Str, label="Model file path")
 
     if torch.cuda.is_available():
         device = Enum("cpu", "cuda", label="Device")
@@ -104,11 +104,11 @@ class ScoreBasedDenoising(ModifierInterface):
         return data.pos.to("cpu").numpy() / scale, convergence
 
     def getModelPath(self):
-        if self.modelPath is not None:
-            path = Path(self.modelPath)
+        if self.model_path is not None:
+            path = Path(self.model_path)
             if not path.exists():
                 raise FileNotFoundError(f"{path} does not exist.")
-            return Path(self.modelPath)
+            return Path(self.model_path)
         modelDir = impRes.files("graphite.pretrained_models.denoiser")
         match self.structure:
             case "SiO2":
