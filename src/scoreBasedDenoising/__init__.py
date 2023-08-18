@@ -186,7 +186,7 @@ class ScoreBasedDenoising(ModifierInterface):
             case "FCC" | "BCC" | "HCP":
                 model = self.setupFccBccHcpModel(data)
             case "Custom":
-                model = self.setupCustomModel(data)
+                model = self.setupCustomModel()
             case _:
                 raise NotImplementedError
 
@@ -195,12 +195,19 @@ class ScoreBasedDenoising(ModifierInterface):
 
         noisy_atoms = ovito_to_ase(data)
 
-        if self.scale is not None:
-            modelScale = ScoreBasedDenoising.originalScale[self.structure] / self.scale
+        if self.structure == "Custom":
+            modelScale = self.scale
         else:
-            estNNdist = self.estimateNearestNeighborsDistance(data)
-            print(f"Estimated nearest neighbor distance = {estNNdist:#.3g} A")
-            modelScale = ScoreBasedDenoising.originalScale[self.structure] / estNNdist
+            if self.scale is not None:
+                modelScale = (
+                    ScoreBasedDenoising.originalScale[self.structure] / self.scale
+                )
+            else:
+                estNNdist = self.estimateNearestNeighborsDistance(data)
+                print(f"Estimated nearest neighbor distance = {estNNdist:#.3g} A")
+                modelScale = (
+                    ScoreBasedDenoising.originalScale[self.structure] / estNNdist
+                )
 
         denoised_atoms, convergence = yield from self.denoise_snapshot(
             noisy_atoms, model, modelScale
