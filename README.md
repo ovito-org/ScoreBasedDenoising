@@ -30,13 +30,13 @@ The modifier can be found under the label "Denoise particle positions" in the OV
 ## Installation
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
   ```
-  ovitos -m pip install --user git+https://github.com/nnn911/ScoreBasedDenoising.git
+  ovitos -m pip install --user git+https://github.com/ovito-org/ScoreBasedDenoising.git
   ``` 
   The `--user` option is recommended and [installs the package in the user's site directory](https://pip.pypa.io/en/stable/user_guide/#user-installs).
 
 - Other Python interpreters or Conda environments:
   ```
-  pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
+  pip install git+https://github.com/ovito-org/ScoreBasedDenoising.git
   ```
 
 By default this will install the CPU version of [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io). 

@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [project.urls]
-repository = "https://github.com/nnn911/ScoreBasedDenoising"
+repository = "https://github.com/ovito-org/ScoreBasedDenoising"
 
 [project.entry-points.'OVITO.Modifier']
 "Denoise particle positions" = "scoreBasedDenoising:ScoreBasedDenoising"
