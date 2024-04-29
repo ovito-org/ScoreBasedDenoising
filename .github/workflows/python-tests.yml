@@ -42,7 +42,7 @@ jobs:
       if:  matrix.os == 'macos-latest'
       run: |
         mamba install -y -c conda-forge pytest
-        mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito>=3.10.0
+        mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito>=3.9.1
         mamba install -y pytorch pytorch -c pytorch -c conda-forge
     - name: Install python dependencies conda
       if:  matrix.os != 'macos-latest'
