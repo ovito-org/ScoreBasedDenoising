@@ -34,7 +34,7 @@ jobs:
         channels: conda-forge,defaults
         channel-priority: true
         auto-activate-base: true
-        activate-environment: ""
+        activate-environment: true
     - name: Install python dependencies conda
       if:  matrix.os == 'macos-latest'
       run: |
