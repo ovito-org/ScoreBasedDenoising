@@ -37,22 +37,18 @@ jobs:
     - name: Install python dependencies conda
       if:  matrix.os == 'macos-latest'
       run: |
-        mamba activate ovito_test
         mamba install -y -c conda-forge pytest
         mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito>=3.9.1
         mamba install -y pytorch pytorch -c pytorch -c conda-forge
     - name: Install python dependencies conda
       if:  matrix.os != 'macos-latest'
       run: |
-        mamba activate ovito_test
         mamba install -y -c conda-forge pytest
         mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito
         mamba install -y pytorch pytorch-cuda=12.1 -c pytorch -c nvidia -c conda-forge
     - name: Install python dependencies pip
       run: |
-        mamba activate ovito_test
         python -m pip install .
     - name: Test with pytest
       run: |
-        mamba activate ovito_test
         pytest
