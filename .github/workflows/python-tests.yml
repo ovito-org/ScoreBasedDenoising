@@ -30,10 +30,11 @@ jobs:
       with:
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
-        activate-environment: ovito_test
         mamba-version: "*"
         channels: conda-forge,defaults
         channel-priority: true
+        auto-activate-base: true
+        activate-environment: ""
     - name: Install python dependencies conda
       if:  matrix.os == 'macos-latest'
       run: |
