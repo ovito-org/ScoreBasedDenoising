@@ -45,7 +45,9 @@ jobs:
         mamba install -y -c conda-forge pytest
         mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito
         mamba install -y pytorch pytorch -c pytorch -c conda-forge
-      else:
+    - name: Install python dependencies conda
+      shell: bash -el {0}
+      if:  matrix.os != 'macos-latest'
       run: |
         mamba install -y -c conda-forge pytest
         mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito
