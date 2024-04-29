@@ -25,15 +25,10 @@ jobs:
       if:  matrix.os == 'ubuntu-latest'
       run: |
         sudo apt install -y libegl1 libegl1-mesa libegl-mesa0 libgl1-mesa-glx libopengl0
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
-        check-latest: true
     - name: setup mamba
       uses: conda-incubator/setup-miniconda@v3
       with:
+        python-version: ${{ matrix.python-version }}
         activate-environment: ovito_test
         mamba-version: "*"
         channels: conda-forge,defaults
