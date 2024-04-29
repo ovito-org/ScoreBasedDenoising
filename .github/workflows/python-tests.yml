@@ -39,14 +39,12 @@ jobs:
         channels: conda-forge,defaults
         channel-priority: true
     - name: Install python dependencies conda
-      shell: bash -el {0}
       if:  matrix.os == 'macos-latest'
       run: |
         mamba install -y -c conda-forge pytest
-        mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito
+        mamba install -y --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito>=3.10.0
         mamba install -y pytorch pytorch -c pytorch -c conda-forge
     - name: Install python dependencies conda
-      shell: bash -el {0}
       if:  matrix.os != 'macos-latest'
       run: |
         mamba install -y -c conda-forge pytest
