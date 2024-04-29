@@ -28,6 +28,11 @@ The modifier can be found under the label "Denoise particle positions" in the OV
 ![Score-based denoising](examples/fcc_gb_example_comparison.png)
 
 ## Installation
+
+> [!IMPORTANT]  
+> This approach might not work depending on your plattform 
+> Please use conda if you encounter any issues
+
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
   ```
   ovitos -m pip install --user git+https://github.com/ovito-org/ScoreBasedDenoising.git
@@ -45,23 +50,23 @@ On Mac, the `mps` backend will also be presented. This is mostly for future proo
 
 On other platforms you can install the cuda accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `cuda` in the modifier device selection to run model inference on GPU.
 
-### Conda (Micromamba) + cuda on Windows 11 install example
+### Conda + cuda on Windows 11 example
 
 ```
-micromamba create -n denoise -c conda-forge python=3.10
-micromamba activate denoise
-micromamba install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.9.1
-micromamba install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia -c conda-forge
-micromamba install pyg -c pyg -c conda-forge
-micromamba install -c conda-forge ase pandas e3nn
+conda create -n denoise -c conda-forge python=3.10
+conda activate denoise
+conda install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.10.5
+conda install install pytorch pytorch-cuda=12.1 -c pytorch -c nvidia -c conda-forge
+conda install pyg -c pyg -c conda-forge
+conda install -c conda-forge ase pandas e3nn
 pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
 ```
 
 ## Technical information / dependencies
-Tested on:
-- OVITO == 3.9.1
-- torch == 1.11.0 | 2.0.1
-- torch-geometric == 2.0.4 | 2.3.1
+Tested on (using conda):
+- OVITO == 3.10.5
+- torch == 2.2.2
+- torch-geometric == 2.5.3
 
 ## Contact
 Daniel Utt utt@ovito.org
