@@ -109,7 +109,8 @@ class ScoreBasedDenoising(ModifierInterface):
             if not path.exists():
                 raise FileNotFoundError(f"{path} does not exist.")
             return Path(self.model_path)
-        modelDir = impRes.files("graphite.pretrained_models.denoiser")
+        # modelDir = impRes.files("graphite.pretrained_models.denoiser")
+        modelDir = impRes.files("graphite") / "pretrained_models" / "denoiser"
         if self.structure == "SiO2":
             return modelDir.joinpath("SiO2-denoiser.pt")
         elif (
