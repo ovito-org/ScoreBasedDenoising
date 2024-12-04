@@ -12,10 +12,6 @@ As described by the original authors in their abstract:
 
 [Hsu, T., Sadigh, B., Bertin, N., Park, C. W., Chapman, J., Bulatov, V. & Zhou, F. Score-based denoising for atomic structure identification. npj Comput Mater 10, (2024).](https://doi.org/10.1038/s41524-024-01337-z)
 
-## Parameters 
-
-The modifier can be found under the label "Denoise particle positions" in the OVITO Pro interface. The Python modifier class and the module are both called `ScoreBasedDenoising`.
-
 ## Parameters
 
 | GUI name                                | Python name     | Description                                                                                                                                                                                                                                                                                                                                                         | Default |
