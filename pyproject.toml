@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scoreBasedDenoising"
-version = "2024.1"
+version = "2024.2"
 description = "Score-based denoising for atomic structure identification - Iteratively subtract thermal noises or perturbations from atomic positions."
 keywords = ["ovito", "ovito-extension"]
 authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
@@ -18,7 +18,7 @@ dependencies = [
     "torch-geometric >= 2.0.4",
     "ase",
     "pandas",
-    "e3nn >= 0.4.4",
+    "e3nn == 0.4.4",
     "graphite @ git+https://github.com/LLNL/graphite.git@b7b182d",
     # Temporarily use my fork until PRs are merged upstream
     # "graphite @git+https://github.com/nnn911/graphite@d068a0c",
