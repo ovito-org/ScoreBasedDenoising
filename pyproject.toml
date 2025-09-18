@@ -20,7 +20,7 @@ dependencies = [
     "scikit-learn",
     "torch >= 2.6",
     "torch-geometric",
-    "graphite @ git+https://github.com/LLNL/graphite",
+    "graphite @ git+https://github.com/LLNL/graphite.git@b7b182d",
 ]
 
 [project.urls]

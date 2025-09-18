@@ -6,6 +6,7 @@
 # Reference: https://arxiv.org/abs/2212.02421
 import torch
 
+# Fix for torch.load() inside e3nn
 torch.serialization.add_safe_globals([slice])
 
 import functools
@@ -15,11 +16,7 @@ import time
 import warnings
 from pathlib import Path
 
-import e3nn
-import graphite
 import numpy as np
-import torch
-from graphite.nn.models.e3nn_nequip import NequIP
 from graphite.nn.utils.e3nn_initial_embedding import InitialEmbedding
 from graphite.transforms import PeriodicRadiusGraph
 from ovito.data import DataTable, NearestNeighborFinder
