@@ -4,12 +4,19 @@
 # Wrapper around the original implementation at LLNL: https://github.com/LLNL/graphite
 #
 # Reference: https://arxiv.org/abs/2212.02421
+import torch
 
+torch.serialization.add_safe_globals([slice])
+
+import functools
 import importlib.resources as impRes
 import sys
 import time
 import warnings
+from pathlib import Path
 
+import e3nn
+import graphite
 import numpy as np
 import torch
 from graphite.nn.models.e3nn_nequip import NequIP
@@ -26,11 +33,10 @@ from ovito.modifiers import (
 from ovito.pipeline import ModifierInterface
 from sklearn.preprocessing import LabelEncoder
 from torch_geometric.data import Data
-from traits.api import Bool, Enum, Float, Int, Union, Str
-from pathlib import Path
-
+from traits.api import Bool, Enum, Float, Int, Str, Union
 
 # Make InitialEmbedding visible to torch.load() (pre-trained models expect Initial embedding to be part of main)
+InitialEmbedding.__module__ = "__main__"
 setattr(sys.modules["__main__"], "InitialEmbedding", InitialEmbedding)
 
 warnings.filterwarnings(
@@ -145,7 +151,11 @@ class ScoreBasedDenoising(ModifierInterface):
         return np.mean(np.linalg.norm(neighVec, axis=2))
 
     def setupSiO2model(self, data):
-        model = torch.load(self.getModelPath(), map_location=torch.device(self.device))
+        model = torch.load(
+            self.getModelPath(),
+            map_location=torch.device(self.device),
+            weights_only=False,
+        )
         cts = {"Si": 0, "O": 0}
         for uni in np.unique(data.particles["Particle Type"]):
             name = data.particles["Particle Type"].type_by_id(uni).name
@@ -162,7 +172,11 @@ class ScoreBasedDenoising(ModifierInterface):
         return model
 
     def setupFccBccHcpModel(self, data):
-        model = torch.load(self.getModelPath(), map_location=torch.device(self.device))
+        model = torch.load(
+            self.getModelPath(),
+            map_location=torch.device(self.device),
+            weights_only=False,
+        )
         data.particles_.create_property(
             "Particle Type Backup", data=data.particles["Particle Type"]
         )
@@ -170,7 +184,11 @@ class ScoreBasedDenoising(ModifierInterface):
         return model
 
     def setupCustomModel(self):
-        return torch.load(self.getModelPath(), map_location=torch.device(self.device))
+        return torch.load(
+            self.getModelPath(),
+            map_location=torch.device(self.device),
+            weights_only=False,
+        )
 
     def teardownFccBccHcpModel(self, data):
         data.particles_["Particle Type_"][...] = data.particles["Particle Type Backup"]
@@ -263,11 +281,11 @@ class ScoreBasedDenoising(ModifierInterface):
 
             yield from self._modify(data_clone, frame, **kwargs)
 
-            data.particles_["Position_"][
-                data.particles["Selection"] == 1
-            ] = data_clone.particles["Position"][
-                data_clone.particles["SelectionOrig"] == 1
-            ]
+            data.particles_["Position_"][data.particles["Selection"] == 1] = (
+                data_clone.particles["Position"][
+                    data_clone.particles["SelectionOrig"] == 1
+                ]
+            )
             for t in data_clone.tables:
                 data.objects.append(data_clone.tables[t])
         else:
