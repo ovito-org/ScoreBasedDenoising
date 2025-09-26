@@ -9,7 +9,7 @@ description = "Score-based denoising for atomic structure identification - Itera
 keywords = ["ovito", "ovito-extension"]
 authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 maintainers = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
-license = { text = "MIT" }
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
