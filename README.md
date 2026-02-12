@@ -46,7 +46,8 @@ As described by the original authors in their abstract:
 
 By default this will install the CPU version of [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io). 
 
-On Mac, the `mps` backend will also be presented. This is mostly for future proofing since currently not all required PyTorch and PyG methods have been ported to `mps`.
+On Mac, the `mps` backend will also be presented. ~~This is mostly for future proofing since currently not all required PyTorch and PyG methods have been ported to `mps`.~~ 
+Update (2026/Feb/12): The `mps` backend is now working on Mac for `torch>=2.10.0`. Perfomance seems to be **significantly worse** than the `cpu` backend on my M1 MacBook Pro.
 
 On other platforms you can install the cuda accelelerated versions of PyTorch and PyG yourself. At this point, you should be able to select `cuda` in the modifier device selection to run model inference on GPU.
 
@@ -56,17 +57,17 @@ On other platforms you can install the cuda accelelerated versions of PyTorch an
 conda create -n denoise -c conda-forge python=3.10
 conda activate denoise
 conda install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.10.5
-conda install install pytorch pytorch-cuda=12.1 -c pytorch -c nvidia -c conda-forge
+conda install install "pytorch>=2.6" pytorch-cuda=12.1 -c pytorch -c nvidia -c conda-forge
 conda install pyg -c pyg -c conda-forge
 conda install -c conda-forge ase pandas e3nn
 pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
 ```
 
 ## Technical information / dependencies
-Tested on (using conda):
-- OVITO == 3.10.5
-- torch == 2.2.2
-- torch-geometric == 2.5.3
+Last tested on 2026/Feb/12, Mac, pip:
+- OVITO == 3.15.0-dev
+- torch == 2.10.0
+- torch-geometric == 2.6.1
 
 ## Contact
 Daniel Utt utt@ovito.org

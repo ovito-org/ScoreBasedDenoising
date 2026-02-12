@@ -3,7 +3,7 @@
 #
 # Wrapper around the original implementation at LLNL: https://github.com/LLNL/graphite
 #
-# Reference: https://arxiv.org/abs/2212.02421
+# Reference: https://doi.org/10.1038/s41524-024-01337-z
 import torch
 
 # Fix for torch.load() inside e3nn

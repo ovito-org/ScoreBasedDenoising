@@ -4,22 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ScoreBasedDenoising"
-version = "2025.1"
+version = "2026.0"
 description = "Score-based denoising for atomic structure identification - Iteratively subtract thermal noises or perturbations from atomic positions."
 keywords = ["ovito", "ovito-extension"]
 authors = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 maintainers = [{ name = "Daniel Utt", email = "utt@ovito.org" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "ovito >= 3.9.1",
     "ase",
     "pandas",
     "e3nn == 0.4.4",
     "scikit-learn",
-    "torch >= 2.6",
-    "torch-geometric",
+    "torch >= 2.6, <= 2.10",
+    "torch-geometric < 2.7",
     "graphite @ git+https://github.com/LLNL/graphite.git@b7b182d",
 ]
 
@@ -37,4 +37,5 @@ filterwarnings = [
     "error",
     "ignore:module 'sre_parse' is deprecated:DeprecationWarning",
     "ignore:module 'sre_constants' is deprecated:DeprecationWarning",
+    "ignore::DeprecationWarning:torch.jit",
 ]
