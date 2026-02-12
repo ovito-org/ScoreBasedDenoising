@@ -54,11 +54,11 @@ On other platforms you can install the cuda accelelerated versions of PyTorch an
 ### Conda + cuda on Windows 11 example
 
 ```
-conda create -n denoise -c conda-forge python=3.10
+conda create -n denoise -c conda-forge python=3.13
 conda activate denoise
-conda install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.10.5
+conda install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito==3.14.1
 conda install install "pytorch>=2.6" pytorch-cuda=12.1 -c pytorch -c nvidia -c conda-forge
-conda install pyg -c pyg -c conda-forge
+conda install pyg -c "pyg<2.7" -c conda-forge
 conda install -c conda-forge ase pandas e3nn
 pip install git+https://github.com/nnn911/ScoreBasedDenoising.git
 ```
