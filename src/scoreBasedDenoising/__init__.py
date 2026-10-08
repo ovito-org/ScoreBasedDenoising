@@ -168,16 +168,13 @@ class ScoreBasedDenoising(ModifierInterface):
                 )
         return model
 
-    def setupFccBccHcpModel(self, data):
+    def setupFccBccHcpModel(self, noisy_atoms):
         model = torch.load(
             self.getModelPath(),
             map_location=torch.device(self.device),
             weights_only=False,
         )
-        data.particles_.create_property(
-            "Particle Type Backup", data=data.particles["Particle Type"]
-        )
-        data.particles_["Particle Type_"][...] = 1
+        noisy_atoms.symbols[:] = "H"
         return model
 
     def setupCustomModel(self):
@@ -202,6 +199,8 @@ class ScoreBasedDenoising(ModifierInterface):
         table.y = table.create_property(ylabel, data=y)
 
     def _modify(self, data, frame, **kwargs):
+        noisy_atoms = ovito_to_ase(data)
+
         if self.structure == "SiO2":
             model = self.setupSiO2model(data)
         elif (
@@ -209,7 +208,7 @@ class ScoreBasedDenoising(ModifierInterface):
             or self.structure == "BCC"
             or self.structure == "HCP"
         ):
-            model = self.setupFccBccHcpModel(data)
+            model = self.setupFccBccHcpModel(noisy_atoms)
         elif self.structure == "Custom":
             model = self.setupCustomModel()
         else:
@@ -217,8 +216,6 @@ class ScoreBasedDenoising(ModifierInterface):
 
         model = model.to(self.device)
         model.eval()
-
-        noisy_atoms = ovito_to_ase(data)
 
         if self.structure == "Custom":
             modelScale = self.scale
@@ -238,19 +235,6 @@ class ScoreBasedDenoising(ModifierInterface):
             noisy_atoms, model, modelScale
         )
         data.particles_["Position_"][...] = denoised_atoms
-
-        if self.structure == "SiO2":
-            pass
-        elif (
-            self.structure == "FCC"
-            or self.structure == "BCC"
-            or self.structure == "HCP"
-        ):
-            self.teardownFccBccHcpModel(data)
-        elif self.structure == "Custom":
-            pass
-        else:
-            raise NotImplementedError
 
         ScoreBasedDenoising.writeTable(data, convergence, "Convergence", "Convergence")
         ScoreBasedDenoising.writeTable(
